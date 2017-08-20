@@ -1,9 +1,23 @@
 require('dotenv').config({ path: './conf.env' })
 const express = require('express')
-const app = express()
+const elasticsearch = require('elasticsearch')
 
-app.get('/', (req, res) => {
-    res.send('OK!')
+const app = express()
+const elasticClient = new elasticsearch.Client({
+    host: process.env.ELASTIC_HOST
+})
+
+app.get('/', async (req, res) => {
+    const { q } = req.query
+
+    if (!q) return res.status(400).send('No query specified')
+
+    const results = await elasticClient.search({
+        index: process.env.ELASTIC_INDEX_NAME,
+        q: `name:${q}`
+    })
+
+    res.json(results)
 })
 
 app.listen(process.env.PORT, () => {
