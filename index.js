@@ -7,6 +7,15 @@ const elasticClient = new elasticsearch.Client({
     host: process.env.ELASTIC_HOST
 })
 
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    )
+    next()
+})
+
 app.get('/', async (req, res) => {
     const { q } = req.query
 
