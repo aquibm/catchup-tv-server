@@ -23,7 +23,21 @@ app.get('/', async (req, res) => {
 
     const results = await elasticClient.search({
         index: process.env.ELASTIC_INDEX_NAME,
-        q: `name:${q}`
+        body: {
+            query: {
+                match: {
+                    name: q
+                }
+            },
+            sort: {
+                _score: {
+                    order: 'desc'
+                },
+                weight: {
+                    order: 'desc'
+                }
+            }
+        }
     })
 
     res.json(results)
